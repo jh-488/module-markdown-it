@@ -1,4 +1,4 @@
-# edrys_module-markdown-it
+# Edrys Markdown-it Module
 
 With this module you can define tasks with Markdown-it.
 Additionally it adds support for:
@@ -42,14 +42,14 @@ Additionally it adds support for:
 Import the following URL to your document:
 
 ```
-https://cross-lab-project.github.io/edrys_module-markdown-it/index.html
+https://edrys-labs.github.io/module-markdown-it/index.html
 ```
 
 If your edrys supports Yaml-configs, you can also load:
 
-`https://raw.githubusercontent.com/cross-lab-project/edrys_module-markdown-it/2.0.0/module.yaml`
+`https://raw.githubusercontent.com/edrys-labs/module-markdown-it/2.0.0/module.yaml`
 
-`https://raw.githubusercontent.com/cross-lab-project/edrys_module-markdown-it/2.0.0/index.html`
+`https://raw.githubusercontent.com/edrys-labs/module-markdown-it/2.0.0/index.html`
 
 ## Configuration
 
