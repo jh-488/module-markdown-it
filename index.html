@@ -1,23 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="fetch" content="true" />
 
-    <meta name="fetch" content="true">
-
-    <meta name="description" content="Write Markdown as task-descriptions for your students, this markdown interpreter additionally allows to integrate formulas, ASCII-art and videos. For more information, see <br><a href='https://github.com/Cross-Lab-Project/edrys_module-markdown-it' target='_blank'>https://github.com/Cross-Lab-Project/edrys_module-markdown-it</a>" />
+    <meta
+      name="description"
+      content="Write Markdown as task-descriptions for your students, this markdown interpreter additionally allows to integrate formulas, ASCII-art and videos. For more information, see <br><a href='https://github.com/Cross-Lab-Project/edrys_module-markdown-it' target='_blank'>https://github.com/Cross-Lab-Project/edrys_module-markdown-it</a>"
+    />
     <meta name="show-in" content="*" />
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css"
+    />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
 
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markdown-it-texmath/css/texmath.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/markdown-it-texmath/css/texmath.min.css"
+    />
     <script src="https://cdn.jsdelivr.net/npm/markdown-it-texmath/texmath.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css"
+    />
     <script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/9.2.2/mermaid.min.js"></script>
@@ -25,94 +35,105 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/13.0.1/markdown-it.min.js"></script>
 
-
     <script src="https://edrys-labs.github.io/module/edrys.js"></script>
-    <script defer src="https://edrys-labs.github.io/module/vendor/alpine.min.js"></script>
-    <link rel="stylesheet" href="https://edrys-labs.github.io/module/vendor/water.min.css" />
-    <link rel="stylesheet" href="https://edrys-labs.github.io/module/vendor/open-iconic/css/open-iconic.min.css" />
+    <script
+      defer
+      src="https://edrys-labs.github.io/module/vendor/alpine.min.js"
+    ></script>
+    <link
+      rel="stylesheet"
+      href="https://edrys-labs.github.io/module/vendor/water.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://edrys-labs.github.io/module/vendor/open-iconic/css/open-iconic.min.css"
+    />
 
     <script>
-        function init() {
-            if (window.md) return
+      function init() {
+        if (window.md) return
 
-            if (!window.markdownItTextualUml) {
-                setTimeout(init, 100)
-                return
-            }
-
-            window.md = markdownit()
-
-            // enable everything
-            window.md.options.html = true
-            window.md.options.linkify = true
-            window.md.options.typographer = true
-
-            window.md.options.highlight = function (str, lang) {
-                if (lang && hljs.getLanguage(lang)) {
-                    try {
-                        return '<pre class="hljs"><code style="border-radius: 0px">' +
-                            hljs.highlight(str, {
-                                language: lang,
-                                ignoreIllegals: true
-                            }).value +
-                            '</code></pre>';
-                    } catch (__) {}
-                }
-
-                return '<pre class="hljs"><code style="border-radius: 0px">' + md.utils.escapeHtml(str) +
-                    '</code></pre>';
-            }
-
-            window.md.use(
-                    texmath, {
-                        engine: katex,
-                        delimiters: 'dollars',
-                        katexOptions: {
-                            macros: {
-                                "\\RR": "\\mathbb{R}"
-                            }
-                        }
-                    })
-                .use(window.markdownItTextualUml)
+        if (!window.markdownItTextualUml) {
+          setTimeout(init, 100)
+          return
         }
 
-        function render(content) {
-            if (window.md) {
-                document.body.innerHTML = md.render(content)
+        window.md = markdownit()
 
-                setTimeout(() => {
-                    console.warn("loading mermaid")
-                    mermaid.initialize({
-                        startOnLoad: true
-                    })
-                }, 1000)
-            } else {
-                setTimeout(() => {
-                    render(content)
-                }, 100)
-            }
+        // enable everything
+        window.md.options.html = true
+        window.md.options.linkify = true
+        window.md.options.typographer = true
+
+        window.md.options.highlight = function (str, lang) {
+          if (lang && hljs.getLanguage(lang)) {
+            try {
+              return (
+                '<pre class="hljs"><code style="border-radius: 0px">' +
+                hljs.highlight(str, {
+                  language: lang,
+                  ignoreIllegals: true,
+                }).value +
+                '</code></pre>'
+              )
+            } catch (__) {}
+          }
+
+          return (
+            '<pre class="hljs"><code style="border-radius: 0px">' +
+            md.utils.escapeHtml(str) +
+            '</code></pre>'
+          )
         }
 
-        window.onload = init
+        window.md
+          .use(texmath, {
+            engine: katex,
+            delimiters: 'dollars',
+            katexOptions: {
+              macros: {
+                '\\RR': '\\mathbb{R}',
+              },
+            },
+          })
+          .use(window.markdownItTextualUml)
+      }
 
-        Edrys.onReady(() => {
-            console.log("Markdown-IT loaded")
+      function render(content) {
+        if (window.md) {
+          document.body.innerHTML = md.render(content)
 
-            init()
-
-            let content = Edrys.module.config || ""
-
-            content += "\n\n" + (Edrys.module[Edrys.role.toLowerCase() + 'Config'] || "")
-
+          setTimeout(() => {
+            console.warn('loading mermaid')
+            mermaid.initialize({
+              startOnLoad: true,
+            })
+          }, 1000)
+        } else {
+          setTimeout(() => {
             render(content)
-        });
+          }, 100)
+        }
+      }
+
+      window.onload = init
+
+      Edrys.onReady(() => {
+        console.log('Markdown-IT loaded')
+
+        init()
+
+        let content = Edrys.module.config || ''
+
+        content +=
+          '\n\n' + (Edrys.module[Edrys.role.toLowerCase() + 'Config'] || '')
+
+        render(content)
+      })
     </script>
 
     <title>Markdown-IT</title>
-</head>
+  </head>
 
-<body>
-    
-</body>
-
+  <body></body>
 </html>
