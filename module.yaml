@@ -23,6 +23,13 @@ load:
     - https://edrys-labs.github.io/module/vendor/water.min.css
     - https://edrys-labs.github.io/module/vendor/open-iconic/css/open-iconic.min.css
 
+style: |-
+  body {
+    margin: 0px;
+    padding: 1rem;
+    min-width: calc(100% - 2rem);
+  }
+
 body: ""
 
 main: |-
