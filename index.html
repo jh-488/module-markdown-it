@@ -12,6 +12,35 @@
       content="Write Markdown as task-descriptions for your students, this markdown interpreter additionally allows to integrate formulas, ASCII-art and videos. For more information, see <br><a href='https://github.com/Cross-Lab-Project/edrys_module-markdown-it' target='_blank'>https://github.com/Cross-Lab-Project/edrys_module-markdown-it</a>"
     />
     <meta name="show-in" content="*" />
+    <meta 
+      name="module-config" 
+      content="{
+        'config': {
+          'content': {
+            'type': 'code-area',
+            'hint': 'Content to be shown for all roles',
+          }
+        },
+        'teacherConfig': {
+          'content': {
+            'type': 'code-area',
+            'hint': 'Content to be shown for teachers',
+          }
+        },
+        'studentConfig': {
+          'content': {
+            'type': 'code-area',
+            'hint': 'Content to be shown for students',
+          }
+        },
+        'stationConfig': {
+          'content': {
+            'type': 'code-area',
+            'hint': 'Content to be shown just in stations',
+          }
+        }
+      }" 
+    />
 
     <link
       rel="stylesheet"
@@ -123,10 +152,9 @@
 
         init()
 
-        let content = Edrys.module.config || ''
+        let content = Edrys.module.config.content || ''
 
-        content +=
-          '\n\n' + (Edrys.module[Edrys.role.toLowerCase() + 'Config'] || '')
+        content += '\n\n' + (Edrys.module[Edrys.role.toLowerCase() + 'Config'] || '').content
 
         render(content)
       })
