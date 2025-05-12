@@ -54,10 +54,10 @@ If your edrys supports Yaml-configs, you can also load:
 ## Configuration
 
 To simplify the usage, we provide the example in Yaml and not in JSON, you have to convert it by your own.
-You can modify only the general configuration, it will be presented to all and if you add different strings to other roles teacher/students/station, then this content will be presented additionally.
+You can modify only the content property in the general configuration, it will be presented to all and if you add different strings to other roles teacher/students/station, then this content will be presented additionally.
 
 ```` yaml
-|-
+content: >-
   # Main Document
 
   This document will be shown to all users,
