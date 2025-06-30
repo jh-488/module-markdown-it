@@ -133,21 +133,27 @@
 
       function render(content) {
         if (window.md) {
-          document.body.innerHTML = md.render(content)
+          // Process markdown first, then set to DOM
+          const renderedHTML = md.render(content)
+          document.body.innerHTML = renderedHTML
+          
+          // Show the body now that content is processed
+          document.body.classList.add('loaded')
 
+          // Only initialize mermaid after content is rendered
           setTimeout(() => {
             console.warn('loading mermaid')
             mermaid.initialize({
               startOnLoad: true,
             })
-          }, 1000)
+          }, 100)
         } else {
           setTimeout(() => {
             render(content)
           }, 100)
         }
       }
-
+      
       window.onload = init
 
       Edrys.onReady(() => {
@@ -170,6 +176,11 @@
         margin: 0px;
         padding: 1rem;
         min-width: calc(100% - 2rem);
+        visibility: hidden; /* Hide until content is processed */
+      }
+      
+      body.loaded {
+        visibility: visible;
       }
     </style>
   </head>
