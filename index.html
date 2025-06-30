@@ -60,7 +60,51 @@
     <script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/9.2.2/mermaid.min.js"></script>
-    <script src="dist/index.js"></script>
+    
+    <!-- iOS Safari Fix: Load script with proper error handling and MIME type -->
+    <script>
+      // iOS Safari compatible script loader
+      function loadScript(src, callback) {
+        const script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.async = false;
+        
+        script.onload = function() {
+          console.log('Script loaded successfully:', src);
+          if (callback) callback();
+        };
+        
+        script.onerror = function() {
+          console.error('Failed to load script:', src);
+          // Fallback for iOS Safari
+          fetch(src)
+            .then(response => {
+              if (!response.ok) throw new Error('Network response was not ok');
+              return response.text();
+            })
+            .then(code => {
+              // Create script element with inline code instead of blob URL
+              const inlineScript = document.createElement('script');
+              inlineScript.type = 'text/javascript';
+              inlineScript.textContent = code;
+              document.head.appendChild(inlineScript);
+              console.log('Script loaded via fallback method');
+              if (callback) callback();
+            })
+            .catch(error => {
+              console.error('Fallback script loading failed:', error);
+            });
+        };
+        
+        script.src = src;
+        document.head.appendChild(script);
+      }
+      
+      // Load the module script with iOS compatibility
+      loadScript('dist/index.js', function() {
+        console.log('Module script loaded');
+      });
+    </script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/13.0.1/markdown-it.min.js"></script>
 
@@ -80,19 +124,27 @@
 
     <script>
       function init() {
-        if (window.md) return
-
-        if (!window.markdownItTextualUml) {
-          setTimeout(init, 100)
-          return
+        console.log('Initializing markdown renderer...');
+        
+        if (window.md) {
+          console.log('Markdown already initialized');
+          return;
         }
 
-        window.md = markdownit()
+        // Increased timeout for iOS Safari
+        if (!window.markdownItTextualUml) {
+          console.log('Waiting for markdownItTextualUml...');
+          setTimeout(init, 200);
+          return;
+        }
+
+        console.log('Creating markdown instance...');
+        window.md = markdownit();
 
         // enable everything
-        window.md.options.html = true
-        window.md.options.linkify = true
-        window.md.options.typographer = true
+        window.md.options.html = true;
+        window.md.options.linkify = true;
+        window.md.options.typographer = true;
 
         window.md.options.highlight = function (str, lang) {
           if (lang && hljs.getLanguage(lang)) {
@@ -104,60 +156,152 @@
                   ignoreIllegals: true,
                 }).value +
                 '</code></pre>'
-              )
-            } catch (__) {}
+              );
+            } catch (error) {
+              console.warn('Highlight.js error:', error);
+            }
           }
 
           return (
             '<pre class="hljs"><code style="border-radius: 0px">' +
-            md.utils.escapeHtml(str) +
+            (window.md ? window.md.utils.escapeHtml(str) : str) +
             '</code></pre>'
-          )
-        }
+          );
+        };
 
-        window.md
-          .use(texmath, {
-            engine: katex,
-            delimiters: 'dollars',
-            katexOptions: {
-              macros: {
-                '\\RR': '\\mathbb{R}',
+        try {
+          window.md
+            .use(texmath, {
+              engine: katex,
+              delimiters: 'dollars',
+              katexOptions: {
+                macros: {
+                  '\\RR': '\\mathbb{R}',
+                },
               },
-            },
-          })
-          .use(window.markdownItTextualUml)
+            })
+            .use(window.markdownItTextualUml);
+          
+          console.log('Markdown renderer initialized successfully');
+        } catch (error) {
+          console.error('Error initializing markdown plugins:', error);
+        }
       }
 
       function render(content) {
+        console.log('Rendering content...');
+        
+        if (!content) {
+          console.warn('No content to render');
+          return;
+        }
+        
         if (window.md) {
-          document.body.innerHTML = md.render(content)
+          try {
+            const renderedHTML = window.md.render(content);
+            document.body.innerHTML = renderedHTML;
+            console.log('Content rendered successfully');
 
-          setTimeout(() => {
-            console.warn('loading mermaid')
-            mermaid.initialize({
-              startOnLoad: true,
-            })
-          }, 1000)
+            // iOS Safari compatible mermaid initialization
+            setTimeout(() => {
+              if (window.mermaid) {
+                console.log('Initializing mermaid...');
+                try {
+                  mermaid.initialize({
+                    startOnLoad: true,
+                    theme: 'default'
+                  });
+                } catch (error) {
+                  console.error('Mermaid initialization error:', error);
+                }
+              }
+            }, 1500);
+          } catch (error) {
+            console.error('Error rendering markdown:', error);
+            document.body.innerHTML = '<p>Error rendering content: ' + error.message + '</p>';
+          }
         } else {
+          console.log('Markdown not ready, retrying...');
           setTimeout(() => {
-            render(content)
-          }, 100)
+            render(content);
+          }, 200);
         }
       }
 
-      window.onload = init
+      // iOS Safari compatible initialization
+      function initializeApp() {
+        console.log('App initialization started');
+        
+        // Ensure all dependencies are loaded
+        const dependencies = [
+          () => window.markdownit,
+          () => window.hljs,
+          () => window.katex,
+          () => window.texmath
+        ];
+        
+        const checkDependencies = () => {
+          const missing = dependencies.filter(dep => !dep());
+          if (missing.length > 0) {
+            console.log('Waiting for dependencies...');
+            setTimeout(checkDependencies, 100);
+            return;
+          }
+          
+          console.log('All dependencies loaded');
+          init();
+        };
+        
+        checkDependencies();
+      }
 
-      Edrys.onReady(() => {
-        console.log('Markdown-IT loaded')
+      // Multiple initialization strategies for iOS Safari
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeApp);
+      } else {
+        initializeApp();
+      }
+      
+      window.addEventListener('load', initializeApp);
 
-        init()
+      // Edrys integration with better error handling
+      if (typeof Edrys !== 'undefined') {
+        Edrys.onReady(() => {
+          console.log('Edrys loaded, initializing Markdown-IT');
 
-        let content = Edrys.module.config.content || ''
+          init();
 
-        content += '\n\n' + (Edrys.module[Edrys.role.toLowerCase() + 'Config'] || '').content
+          try {
+            let content = '';
+            
+            if (Edrys.module && Edrys.module.config) {
+              content = Edrys.module.config.content || '';
+            }
 
-        render(content)
-      })
+            if (Edrys.role && Edrys.module) {
+              const roleConfig = Edrys.module[Edrys.role.toLowerCase() + 'Config'];
+              if (roleConfig && roleConfig.content) {
+                content += '\n\n' + roleConfig.content;
+              }
+            }
+
+            if (content.trim()) {
+              render(content);
+            } else {
+              console.warn('No content found to render');
+              document.body.innerHTML = '<p>No content available</p>';
+            }
+          } catch (error) {
+            console.error('Error in Edrys initialization:', error);
+            document.body.innerHTML = '<p>Error loading content: ' + error.message + '</p>';
+          }
+        });
+      } else {
+        console.warn('Edrys not available, using fallback initialization');
+        setTimeout(() => {
+          render('# Test Content\n\nThis is a test to verify the markdown renderer is working.');
+        }, 2000);
+      }
     </script>
 
     <title>Markdown-IT</title>
@@ -167,9 +311,30 @@
         margin: 0px;
         padding: 1rem;
         min-width: calc(100% - 2rem);
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      }
+      
+      /* iOS Safari specific styles */
+      @supports (-webkit-touch-callout: none) {
+        body {
+          -webkit-text-size-adjust: 100%;
+          -webkit-font-smoothing: antialiased;
+        }
+      }
+      
+      /* Loading indicator */
+      .loading {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 200px;
+        font-size: 18px;
+        color: #666;
       }
     </style>
   </head>
 
-  <body></body>
+  <body>
+    <div class="loading">Loading markdown renderer...</div>
+  </body>
 </html>
