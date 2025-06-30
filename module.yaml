@@ -115,5 +115,7 @@ main: |-
       
       content += "\n\n" + ( (Edrys.module[Edrys.role.toLowerCase()+'Config'] || {}).content || "" )
 
+      console.log("Rendering content:", content)
+
       render(content)
   });
